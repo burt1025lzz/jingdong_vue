@@ -17,7 +17,7 @@ export default {
 };
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
 .wrapper
   overflow-y: auto
   position: absolute
