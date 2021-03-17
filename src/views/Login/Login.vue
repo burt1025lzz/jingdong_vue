@@ -6,10 +6,15 @@
       src="http://www.dell-lee.com/imgs/vue3/user.png"
     />
     <div class="wrapper__input">
-      <input class="wrapper__input__content" placeholder="请输入手机号" />
+      <input
+        v-model="data.username"
+        class="wrapper__input__content"
+        placeholder="请输入手机号"
+      />
     </div>
     <div class="wrapper__input">
       <input
+        v-model="data.password"
         class="wrapper__input__content"
         placeholder="请输入密码"
         type="password"
@@ -24,15 +29,37 @@
 
 <script>
 import { useRouter } from "vue-router";
+import axios from "axios";
+import { reactive } from "@vue/reactivity";
+
+axios.defaults.headers.post["Content-Type"] = "application/json";
+
 export default {
   name: "Login",
   setup() {
     const router = useRouter();
+    const data = reactive({
+      mobile: "",
+      password: ""
+    });
     const handleLogin = () => {
-      localStorage.isLogin = true;
-      router.push({ name: "Home" });
+      axios
+        .post(
+          "https://www.fastmock.site/mock/ae8e9031947a302fed5f92425995aa19/jd/api/user/login",
+          {
+            username: data.username,
+            password: data.password
+          }
+        )
+        .then(() => {
+          localStorage.isLogin = true;
+          router.push({ name: "Home" });
+        })
+        .catch(() => {
+          alert("登录失败");
+        });
     };
-    return { handleLogin };
+    return { handleLogin, data };
   }
 };
 </script>
