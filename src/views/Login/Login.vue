@@ -6,19 +6,23 @@
       src="http://www.dell-lee.com/imgs/vue3/user.png"
     />
     <div class="wrapper__input">
-      <input
-        v-model="data.username"
-        class="wrapper__input__content"
-        placeholder="请输入手机号"
-      />
+      <label>
+        <input
+          v-model="data.username"
+          class="wrapper__input__content"
+          placeholder="请输入手机号"
+        />
+      </label>
     </div>
     <div class="wrapper__input">
-      <input
-        v-model="data.password"
-        class="wrapper__input__content"
-        placeholder="请输入密码"
-        type="password"
-      />
+      <label>
+        <input
+          v-model="data.password"
+          class="wrapper__input__content"
+          placeholder="请输入密码"
+          type="password"
+        />
+      </label>
     </div>
     <div class="wrapper__login-button" @click="handleLogin">登录</div>
     <router-link :to="{ name: 'Register' }">
@@ -29,10 +33,8 @@
 
 <script>
 import { useRouter } from "vue-router";
-import axios from "axios";
 import { reactive } from "@vue/reactivity";
-
-axios.defaults.headers.post["Content-Type"] = "application/json";
+import { post } from "@/utils/request";
 
 export default {
   name: "Login",
@@ -42,22 +44,21 @@ export default {
       mobile: "",
       password: ""
     });
-    const handleLogin = () => {
-      axios
-        .post(
-          "https://www.fastmock.site/mock/ae8e9031947a302fed5f92425995aa19/jd/api/user/login",
-          {
-            username: data.username,
-            password: data.password
-          }
-        )
-        .then(() => {
-          localStorage.isLogin = true;
-          router.push({ name: "Home" });
-        })
-        .catch(() => {
-          alert("登录失败");
+    const handleLogin = async () => {
+      try {
+        const result = await post("/api/user/login", {
+          username: data.username,
+          password: data.password
         });
+        if (result?.errno === 0) {
+          localStorage.isLogin = true;
+          await router.push({ name: "Home" });
+        } else {
+          alert("登录失败!");
+        }
+      } catch (e) {
+        alert("请求失败!");
+      }
     };
     return { handleLogin, data };
   }
