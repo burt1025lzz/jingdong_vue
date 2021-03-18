@@ -7,13 +7,18 @@
     />
     <div class="wrapper__input">
       <label>
-        <input class="wrapper__input__content" placeholder="请输入手机号" />
+        <input
+          class="wrapper__input__content"
+          v-model="username"
+          placeholder="请输入手机号"
+        />
       </label>
     </div>
     <div class="wrapper__input">
       <label>
         <input
           class="wrapper__input__content"
+          v-model="password"
           placeholder="请输入密码"
           type="password"
         />
@@ -23,6 +28,7 @@
       <label>
         <input
           class="wrapper__input__content"
+          v-model="againPassword"
           placeholder="确认密码"
           type="password"
         />
@@ -33,14 +39,70 @@
       <div class="wrapper__register-link">已有账号去登录</div>
     </router-link>
   </div>
+  <Toast v-if="show" :message="toastMessage" />
 </template>
 
 <script>
+import { useRouter } from "vue-router";
+import { reactive, toRefs } from "@vue/reactivity";
+import { post } from "@/utils/request";
+import Toast, { useToastEffect } from "@/components/Toast/Toast";
+
+const useRegisterEffect = showToast => {
+  const router = useRouter();
+  const data = reactive({
+    username: "",
+    password: "",
+    againPassword: ""
+  });
+  const handleRegister = () => {
+    const { username, password, againPassword } = data;
+    if (!(username && password && againPassword)) {
+      showToast("必填项不能为空");
+      return;
+    } else if (password !== againPassword) {
+      showToast("两次密码输入不一致");
+      return;
+    }
+    post("/api/user/register", {
+      username,
+      password
+    })
+      .then(resp => {
+        if (resp?.errno === 0) {
+          router.push({ name: "Login" });
+        } else {
+          showToast("注册失败");
+        }
+      })
+      .catch(() => {
+        showToast("请求失败");
+      });
+  };
+  const { username, password, againPassword } = toRefs(data);
+  return { username, password, againPassword, handleRegister };
+};
+
 export default {
   name: "Register",
+  components: { Toast },
   setup() {
-    const handleRegister = () => {};
-    return { handleRegister };
+    const { show, toastMessage, showToast } = useToastEffect();
+    const {
+      username,
+      password,
+      againPassword,
+      handleRegister
+    } = useRegisterEffect(showToast);
+    return {
+      handleRegister,
+      username,
+      password,
+      againPassword,
+      show,
+      toastMessage,
+      showToast
+    };
   }
 };
 </script>

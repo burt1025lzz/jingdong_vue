@@ -3,9 +3,28 @@
 </template>
 
 <script>
+import { reactive, toRefs } from "@vue/reactivity";
+
 export default {
   name: "Toast",
   props: ["message"]
+};
+
+export const useToastEffect = () => {
+  const toastData = reactive({
+    show: false,
+    toastMessage: ""
+  });
+  const showToast = message => {
+    toastData.show = true;
+    toastData.toastMessage = message;
+    setTimeout(() => {
+      toastData.show = false;
+      toastData.toastMessage = "";
+    }, 2000);
+  };
+  const { show, toastMessage } = toRefs(toastData);
+  return { show, toastMessage, showToast };
 };
 </script>
 
