@@ -20,9 +20,9 @@
       <img
         alt="icons__item__img"
         className="icons__item__img"
-        :src="item.imgURL"
+        :src="'http://www.dell-lee.com/imgs/vue3/' + item + '.png'"
       />
-      <p className="icons__item__desc">{{ item.desc }}</p>
+      <p className="icons__item__desc">{{ item }}</p>
     </div>
   </div>
   <div className="gap"></div>
@@ -33,43 +33,16 @@ export default {
   name: "StaticPart",
   setup() {
     const iconList = [
-      {
-        imgURL: "http://www.dell-lee.com/imgs/vue3/超市.png",
-        desc: "超市便利"
-      },
-      {
-        imgURL: "http://www.dell-lee.com/imgs/vue3/超市.png",
-        desc: "超市便利"
-      },
-      {
-        imgURL: "http://www.dell-lee.com/imgs/vue3/超市.png",
-        desc: "超市便利"
-      },
-      {
-        imgURL: "http://www.dell-lee.com/imgs/vue3/超市.png",
-        desc: "超市便利"
-      },
-      {
-        imgURL: "http://www.dell-lee.com/imgs/vue3/超市.png",
-        desc: "超市便利"
-      },
-      {
-        imgURL: "http://www.dell-lee.com/imgs/vue3/超市.png",
-        desc: "超市便利"
-      },
-      {
-        imgURL: "http://www.dell-lee.com/imgs/vue3/超市.png",
-        desc: "超市便利"
-      },
-      {
-        imgURL: "http://www.dell-lee.com/imgs/vue3/超市.png",
-        desc: "超市便利"
-      },
-      {
-        imgURL: "http://www.dell-lee.com/imgs/vue3/超市.png",
-        desc: "超市便利"
-      },
-      { imgURL: "http://www.dell-lee.com/imgs/vue3/超市.png", desc: "超市便利" }
+      "超市",
+      "菜市场",
+      "水果店",
+      "鲜花",
+      "医药健康",
+      "家居",
+      "蛋糕",
+      "签到",
+      "大牌免运",
+      "红包"
     ];
     return { iconList };
   }

@@ -1,70 +1,50 @@
 <template>
   <div className="nearby">
     <h3 className="nearby__title">附近店铺</h3>
-    <div v-for="item in nearbyList" :key="item.id" className="nearby__item">
+    <div v-for="item in nearbyList" :key="item._id" className="nearby__item">
       <img
         className="nearby__item__img"
         alt="nearby__item__img"
-        :src="item.imgURL"
+        :src="item.imgUrl"
       />
       <div className="nearby__content">
-        <div className="nearby__content__title">{{ item.title }}</div>
+        <div className="nearby__content__title">{{ item.name }}</div>
         <div className="nearby__content__tags">
-          <span
-            v-for="(innerItem, innerIndex) in item.tags"
-            :key="innerIndex"
-            className="nearby__content__tag"
+          <span className="nearby__content__tag">月售: {{ item.sales }}</span>
+          <span className="nearby__content__tag"
+            >起送: {{ item.expressLimit }}</span
           >
-            {{ innerItem }}
-          </span>
+          <span className="nearby__content__tag"
+            >基础运费: {{ item.expressPrice }}</span
+          >
         </div>
-        <p className="nearby__content__highlight">{{ item.desc }}</p>
+        <p className="nearby__content__highlight">{{ item.slogan }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { ref } from "vue";
+import { get } from "@/utils/request";
+
+const useNearbyListEffect = () => {
+  const nearbyList = ref([]);
+  const getNearbyList = () => {
+    get("/api/shop/hot-list").then(resp => {
+      if (resp?.errno === 0 && resp?.data?.length) {
+        nearbyList.value = resp.data;
+      }
+    });
+  };
+  return { nearbyList, getNearbyList };
+};
+
 export default {
   name: "NearBy",
   setup() {
-    const nearbyList = [
-      {
-        id: 1,
-        title: "沃尔玛",
-        imgURL: "http://www.dell-lee.com/imgs/vue3/near.png",
-        desc: "VIP尊享满89元减4元运费券（每月3张）",
-        tags: ["月售1万+", "起送¥0", "基础运费¥5"]
-      },
-      {
-        id: 2,
-        title: "沃尔玛",
-        imgURL: "http://www.dell-lee.com/imgs/vue3/near.png",
-        desc: "VIP尊享满89元减4元运费券（每月3张）",
-        tags: ["月售1万+", "起送¥0", "基础运费¥5"]
-      },
-      {
-        id: 3,
-        title: "沃尔玛",
-        imgURL: "http://www.dell-lee.com/imgs/vue3/near.png",
-        desc: "VIP尊享满89元减4元运费券（每月3张）",
-        tags: ["月售1万+", "起送¥0", "基础运费¥5"]
-      },
-      {
-        id: 4,
-        title: "沃尔玛",
-        imgURL: "http://www.dell-lee.com/imgs/vue3/near.png",
-        desc: "VIP尊享满89元减4元运费券（每月3张）",
-        tags: ["月售1万+", "起送¥0", "基础运费¥5"]
-      },
-      {
-        id: 5,
-        title: "沃尔玛",
-        imgURL: "http://www.dell-lee.com/imgs/vue3/near.png",
-        desc: "VIP尊享满89元减4元运费券（每月3张）",
-        tags: ["月售1万+", "起送¥0", "基础运费¥5"]
-      }
-    ];
+    const { nearbyList, getNearbyList } = useNearbyListEffect();
+    getNearbyList();
     return { nearbyList };
   }
 };
