@@ -1,7 +1,11 @@
 <template>
   <div className="nearby">
     <h3 className="nearby__title">附近店铺</h3>
-    <router-link to="/shop" v-for="item in nearbyList" :key="item._id">
+    <router-link
+      v-for="item in nearbyList"
+      :to="`/shop/${item._id}`"
+      :key="item._id"
+    >
       <ShopInfo :item="item" :hide-border="true" />
     </router-link>
   </div>
