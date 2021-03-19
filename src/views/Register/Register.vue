@@ -145,8 +145,8 @@ export default {
   &__register-button
     margin: .32rem .4rem .16rem .4rem
     line-height: .48rem
-    color: #FFF
-    background: #0091FF
+    color: $bgColor
+    background: $btn-bgColor
     box-shadow: 0 .04rem .08rem 0 rgba(0, 145, 255, 0.32)
     border-radius: .04rem
     font-size: .16rem

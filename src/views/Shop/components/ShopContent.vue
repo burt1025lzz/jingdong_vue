@@ -23,6 +23,11 @@
             <span class="product__item__origin">&yen;66.6</span>
           </p>
         </div>
+        <div class="product__number">
+          <span class="product__number__minus">-</span>
+          0
+          <span class="product__number__plus">+</span>
+        </div>
       </div>
     </div>
   </div>
@@ -36,6 +41,7 @@ export default {
 
 <style lang="sass" scoped>
 @import "~@/style/viriables"
+@import "~@/style/mixins"
 .content
   display: flex
   position: absolute
@@ -47,7 +53,7 @@ export default {
   .category
     overflow-y: scroll
     width: .76rem
-    background: #F5F5F5
+    background: $search-bgColor
     height: 100%
 
     &__item
@@ -57,17 +63,21 @@ export default {
       color: $content-fontColor
 
       &--active
-        background: #FFF
+        background: $bgColor
 
   .product
     overflow-y: scroll
     flex: 1
 
     &__item
+      position: relative
       display: flex
       padding: .12rem 0
       margin: 0 .16rem
-      border-bottom: .01rem solid #F1F1F1
+      border-bottom: .01rem solid $content-bgColor
+
+      &__detail
+        overflow: hidden
 
       &__img
         width: .68rem
@@ -79,6 +89,7 @@ export default {
         font-size: .14rem
         color: $content-fontColor
         margin: 0
+        @include ellipsis
 
       &__sales
         margin: .1rem 0 .03rem 0
@@ -89,7 +100,7 @@ export default {
       &__price
         line-height: .2rem
         font-size: .14rem
-        color: #E93B3B
+        color: $highlight-fontColor
         margin: 0
 
       &__yen
@@ -99,6 +110,30 @@ export default {
         margin-left: .06rem
         line-height: .2rem
         font-size: .12rem
-        color: #999
+        color: $light-fontColor
         text-decoration: line-through
+
+    &__number
+      position: absolute
+      right: 0
+      bottom: .12rem
+
+      &__minus, &__plus
+        display: inline-block
+        width: .2rem
+        height: .2rem
+        line-height: .16rem
+        border-radius: 50%
+        font-size: .2rem
+        text-align: center
+
+      &__minus
+        border: .01rem solid $medium-fontColor
+        color: $medium-fontColor
+        margin-right: .05rem
+
+      &__plus
+        background: $btn-bgColor
+        color: $bgColor
+        margin-left: .05rem
 </style>

@@ -29,6 +29,7 @@ export const useToastEffect = () => {
 </script>
 
 <style lang="sass" scoped>
+@import "~@/style/viriables"
 .toast
   position: fixed
   top: 50%
@@ -36,6 +37,6 @@ export const useToastEffect = () => {
   transform: translate(-50%, -50%)
   padding: .1rem
   border-radius: .05rem
-  color: #FFF
+  color: $bgColor
   background: rgba(0, 0, 0, .35)
 </style>
