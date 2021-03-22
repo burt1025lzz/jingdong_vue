@@ -40,8 +40,8 @@
 
 <script>
 import { reactive, ref, toRefs, watchEffect } from "vue";
-import { get } from "@/utils/request";
 import { useRoute } from "vue-router";
+import { getProducts } from "@/api/summary";
 
 const categories = [
   { name: "全部商品", tab: "all" },
@@ -62,7 +62,7 @@ const useCurrentListEffect = currentTab => {
   const routeId = route.params.id;
   const content = reactive({ list: [] });
   const getContentData = () => {
-    get(`/api/shop/${routeId}/products`, {
+    getProducts(routeId, {
       tab: currentTab.value
     }).then(resp => {
       if (resp?.errno === 0 && resp?.data.length) {

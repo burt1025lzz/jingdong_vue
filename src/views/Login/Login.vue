@@ -35,7 +35,7 @@
 <script>
 import { reactive, toRefs } from "@vue/reactivity";
 import { useRouter } from "vue-router";
-import { post } from "@/utils/request";
+import { getLogin } from "@/api/summary";
 import Toast, { useToastEffect } from "@/components/Toast/Toast";
 
 const useLoginEffect = showToast => {
@@ -51,7 +51,7 @@ const useLoginEffect = showToast => {
       return;
     }
     try {
-      const result = await post("/api/user/login", {
+      const result = await getLogin({
         username,
         password
       });

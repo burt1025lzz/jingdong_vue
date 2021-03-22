@@ -17,7 +17,7 @@
 <script>
 import { reactive, toRefs } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { get } from "@/utils/request";
+import { getShop } from "@/api/summary";
 import ShopInfo from "@/components/ShopInfo/ShopInfo";
 import ShopContent from "@/views/Shop/components/ShopContent";
 
@@ -28,7 +28,7 @@ const useShopInfoEffect = () => {
     item: {}
   });
   const getItemData = () => {
-    get(`/api/shop/${route.params.id}`).then(resp => {
+    getShop(route.params.id).then(resp => {
       if (resp?.errno === 0 && resp?.data) {
         data.item = resp.data;
       }

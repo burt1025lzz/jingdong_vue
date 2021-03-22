@@ -45,7 +45,7 @@
 <script>
 import { useRouter } from "vue-router";
 import { reactive, toRefs } from "@vue/reactivity";
-import { post } from "@/utils/request";
+import { getRegister } from "@/api/summary";
 import Toast, { useToastEffect } from "@/components/Toast/Toast";
 
 const useRegisterEffect = showToast => {
@@ -64,7 +64,7 @@ const useRegisterEffect = showToast => {
       showToast("两次密码输入不一致");
       return;
     }
-    post("/api/user/register", {
+    getRegister({
       username,
       password
     })
