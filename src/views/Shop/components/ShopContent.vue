@@ -29,9 +29,25 @@
           </p>
         </div>
         <div class="product__number">
-          <span class="product__number__minus">-</span>
-          0
-          <span class="product__number__plus">+</span>
+          <span
+            class="product__number__minus"
+            @click="
+              () => {
+                lessItemToCart(shopId, item._id, item);
+              }
+            "
+            >-</span
+          >
+          {{ cartList?.[shopId]?.[item._id]?.count || 0 }}
+          <span
+            class="product__number__plus"
+            @click="
+              () => {
+                addItemToCart(shopId, item._id, item);
+              }
+            "
+            >+</span
+          >
         </div>
       </div>
     </div>
@@ -41,6 +57,7 @@
 <script>
 import { reactive, ref, toRefs, watchEffect } from "vue";
 import { useRoute } from "vue-router";
+import { useStore } from "vuex";
 import { getProducts } from "@/api/summary";
 
 const categories = [
@@ -57,12 +74,11 @@ const useTabEffect = () => {
   return { currentTab, handleTabClick };
 };
 
-const useCurrentListEffect = currentTab => {
-  const route = useRoute();
-  const routeId = route.params.id;
+// 购物车相关逻辑
+const useCurrentListEffect = (currentTab, shopId) => {
   const content = reactive({ list: [] });
   const getContentData = () => {
-    getProducts(routeId, {
+    getProducts(shopId, {
       tab: currentTab.value
     }).then(resp => {
       if (resp?.errno === 0 && resp?.data.length) {
@@ -76,13 +92,46 @@ const useCurrentListEffect = currentTab => {
   const { list } = toRefs(content);
   return { list };
 };
+
+const useCartEffect = () => {
+  const store = useStore();
+  const { cartList } = toRefs(store.state);
+  const addItemToCart = (shopId, productId, productInfo) => {
+    store.commit("addItemToCart", {
+      shopId,
+      productId,
+      productInfo
+    });
+  };
+  const lessItemToCart = (shopId, productId, productInfo) => {
+    store.commit("lessItemToCart", {
+      shopId,
+      productId,
+      productInfo
+    });
+  };
+  return { cartList, addItemToCart, lessItemToCart };
+};
+
 export default {
   name: "ShopContent",
   setup() {
+    const route = useRoute();
+    const shopId = route.params.id;
     const { currentTab, handleTabClick } = useTabEffect();
-    const { list } = useCurrentListEffect(currentTab);
+    const { list } = useCurrentListEffect(currentTab, shopId);
+    const { cartList, addItemToCart, lessItemToCart } = useCartEffect();
 
-    return { list, categories, currentTab, handleTabClick };
+    return {
+      list,
+      categories,
+      currentTab,
+      cartList,
+      shopId,
+      handleTabClick,
+      addItemToCart,
+      lessItemToCart
+    };
   }
 };
 </script>
