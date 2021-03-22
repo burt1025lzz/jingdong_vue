@@ -16,7 +16,7 @@
     <div class="product">
       <div class="product__item" v-for="item in list" :key="item._id">
         <img
-          src="http://www.dell-lee.com/imgs/vue3/near.png"
+          :src="item.imgUrl"
           alt="product__item__img"
           class="product__item__img"
         />
