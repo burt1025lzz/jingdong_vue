@@ -1,8 +1,16 @@
 <template>
   <div class="cart">
     <div class="product">
+      <div class="product__header"></div>
       <template v-for="item in productsList" :key="item._id">
         <div class="product__item" v-if="item.count > 0">
+          <div
+            class="product__item__checked iconfont"
+            :style="item.check ? { color: '#0091FF' } : { color: '#909399' }"
+            @click="() => changeCartItemChecked(shopId, item._id)"
+          >
+            &#xe652;
+          </div>
           <img
             :src="item.imgUrl"
             alt="product__item__img"
@@ -90,7 +98,7 @@ const useCartEffect = () => {
     if (productList) {
       for (let i in productList) {
         const product = productList[i];
-        count += product.count * product.price;
+        if (product.check) count += product.count * product.price;
       }
     }
     return count.toFixed(2);
@@ -100,7 +108,18 @@ const useCartEffect = () => {
     return cartList[shopId] || [];
   });
 
-  return { total, price, productsList, shopId, changeCartItemInfo };
+  const changeCartItemChecked = (shopId, productId) => {
+    store.commit("changeCartItemChecked", { shopId, productId });
+  };
+
+  return {
+    total,
+    price,
+    productsList,
+    shopId,
+    changeCartItemInfo,
+    changeCartItemChecked
+  };
 };
 
 export default {
@@ -111,9 +130,17 @@ export default {
       price,
       productsList,
       shopId,
-      changeCartItemInfo
+      changeCartItemInfo,
+      changeCartItemChecked
     } = useCartEffect();
-    return { total, price, productsList, shopId, changeCartItemInfo };
+    return {
+      total,
+      price,
+      productsList,
+      shopId,
+      changeCartItemInfo,
+      changeCartItemChecked
+    };
   }
 };
 </script>
@@ -139,6 +166,11 @@ export default {
       padding: .12rem 0
       margin: 0 .16rem
       border-bottom: .01rem solid $content-bgColor
+
+      &__checked
+        font-size: .2rem
+        line-height: .5rem
+        margin-right: .2rem
 
       &__detail
         overflow: hidden
