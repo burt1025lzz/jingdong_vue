@@ -38,7 +38,7 @@
             "
             >-</span
           >
-          {{ cartList?.[shopId]?.[item._id]?.count || 0 }}
+          {{ item.count || 0 }}
           <span
             class="product__number__plus"
             @click="
@@ -100,13 +100,12 @@ export default {
     const shopId = route.params.id;
     const { currentTab, handleTabClick } = useTabEffect();
     const { list } = useCurrentListEffect(currentTab, shopId);
-    const { cartList, changeCartItemInfo } = useCommonCartEffect();
+    const { changeCartItemInfo } = useCommonCartEffect();
 
     return {
       list,
       categories,
       currentTab,
-      cartList,
       shopId,
       handleTabClick,
       changeCartItemInfo
@@ -118,6 +117,7 @@ export default {
 <style lang="sass" scoped>
 @import "~@/style/viriables"
 @import "~@/style/mixins"
+
 .content
   display: flex
   position: absolute

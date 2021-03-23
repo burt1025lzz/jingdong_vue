@@ -66,6 +66,7 @@ import { useCommonCartEffect } from "@/views/Shop/common/cartEffect";
 
 // 获取购物车信息逻辑
 const useCartEffect = () => {
+  const { changeCartItemInfo } = useCommonCartEffect();
   const store = useStore();
   const route = useRoute();
   const shopId = route.params.id;
@@ -99,14 +100,19 @@ const useCartEffect = () => {
     return cartList[shopId] || [];
   });
 
-  return { total, price, productsList, shopId };
+  return { total, price, productsList, shopId, changeCartItemInfo };
 };
 
 export default {
   name: "Cart",
   setup() {
-    const { total, price, productsList, shopId } = useCartEffect();
-    const { changeCartItemInfo } = useCommonCartEffect();
+    const {
+      total,
+      price,
+      productsList,
+      shopId,
+      changeCartItemInfo
+    } = useCartEffect();
     return { total, price, productsList, shopId, changeCartItemInfo };
   }
 };
@@ -125,7 +131,7 @@ export default {
   .product
     overflow-y: scroll
     flex: 1
-    background-color: #FFF
+    background-color: $bgColor
 
     &__item
       position: relative
