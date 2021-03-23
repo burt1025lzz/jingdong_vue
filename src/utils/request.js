@@ -7,11 +7,11 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   config => {
-    if (config.method === "post") {
-      config.headers = {
+    config.method === "post" &&
+      (config.headers = {
         "Content-Type": "application/json"
-      };
-    }
+      });
+
     return config;
   },
   error => {

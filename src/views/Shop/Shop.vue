@@ -31,9 +31,7 @@ const useShopInfoEffect = () => {
   });
   const getItemData = () => {
     getShop(route.params.id).then(resp => {
-      if (resp?.errno === 0 && resp?.data) {
-        data.item = resp.data;
-      }
+      resp?.errno === 0 && resp?.data && (data.item = resp.data);
     });
   };
   const { item } = toRefs(data);

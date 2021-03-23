@@ -1,5 +1,5 @@
 <template>
-  <div class="mask" v-if="showCart" />
+  <div class="mask" v-if="showCart" @click="handleCartShowChange" />
   <div class="cart">
     <div class="product" v-if="showCart">
       <div class="product__header">
@@ -14,11 +14,8 @@
           >
           全选
         </div>
-        <div
-          class="product__header__clear"
-          @click="() => cleanCartProducts(shopId)"
-        >
-          清空购物车
+        <div class="product__header__clear">
+          <span @click="() => cleanCartProducts(shopId)">清空购物车</span>
         </div>
       </div>
       <template v-for="item in productsList" :key="item._id">
@@ -80,7 +77,11 @@
       <div class="check__info">
         总计: <span class="check__info__price">&yen; {{ price }}</span>
       </div>
-      <div class="check__btn">去结算</div>
+      <div class="check__btn">
+        <router-link :to="{ name: 'Home' }">
+          去结算
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -117,7 +118,7 @@ const useCartEffect = () => {
     if (productList) {
       for (let i in productList) {
         const product = productList[i];
-        if (product.check) count += product.count * product.price;
+        product.check && (count += product.count * product.price);
       }
     }
     return count.toFixed(2);
@@ -129,7 +130,7 @@ const useCartEffect = () => {
     if (productList) {
       for (let i in productList) {
         const product = productList[i];
-        if (product.count > 0 && !product.check) result = false;
+        product.count > 0 && !product.check && (result = false);
       }
     }
     return result;
@@ -164,6 +165,14 @@ const useCartEffect = () => {
   };
 };
 
+const toggleCartEffect = () => {
+  const showCart = ref(false);
+  const handleCartShowChange = () => {
+    showCart.value = !showCart.value;
+  };
+  return { showCart, handleCartShowChange };
+};
+
 export default {
   name: "Cart",
   setup() {
@@ -178,10 +187,8 @@ export default {
       cleanCartProducts,
       setCartItemsChecked
     } = useCartEffect();
-    const showCart = ref(false);
-    const handleCartShowChange = () => {
-      showCart.value = !showCart.value;
-    };
+
+    const { showCart, handleCartShowChange } = toggleCartEffect();
 
     return {
       total,
@@ -237,13 +244,19 @@ export default {
         margin-left: .18rem
 
       &__icon
+        vertical-align: top
         line-height: .52rem
         font-size: .2rem
+        margin-right: .1rem
 
       &__clear
         flex: 1
         text-align: right
         margin-right: .16rem
+
+        span
+          display: inline-block
+
 
     &__item
       position: relative
@@ -292,7 +305,7 @@ export default {
     &__number
       position: absolute
       right: 0
-      bottom: .12rem
+      bottom: .26rem
 
       &__minus, &__plus
         display: inline-block
@@ -361,4 +374,6 @@ export default {
       background-color: #4FB0F9
       font-size: .14rem
       text-align: center
+      a
+        color: $bgColor
 </style>

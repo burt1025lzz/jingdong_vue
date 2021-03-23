@@ -20,9 +20,7 @@ const useNearbyListEffect = () => {
   const nearbyList = ref([]);
   const getNearbyList = () => {
     getHotList().then(resp => {
-      if (resp?.errno === 0 && resp?.data?.length) {
-        nearbyList.value = resp.data;
-      }
+      resp?.errno === 0 && resp?.data?.length && (nearbyList.value = resp.data);
     });
   };
   return { nearbyList, getNearbyList };

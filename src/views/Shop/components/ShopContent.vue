@@ -81,9 +81,7 @@ const useCurrentListEffect = (currentTab, shopId) => {
     getProducts(shopId, {
       tab: currentTab.value
     }).then(resp => {
-      if (resp?.errno === 0 && resp?.data.length) {
-        content.list = resp.data;
-      }
+      resp?.errno === 0 && resp?.data.length && (content.list = resp.data);
     });
   };
   watchEffect(() => {

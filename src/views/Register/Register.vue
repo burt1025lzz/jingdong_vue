@@ -69,11 +69,9 @@ const useRegisterEffect = showToast => {
       password
     })
       .then(resp => {
-        if (resp?.errno === 0) {
-          router.push({ name: "Login" });
-        } else {
-          showToast("注册失败");
-        }
+        resp?.errno === 0
+          ? router.push({ name: "Login" })
+          : showToast("注册失败");
       })
       .catch(() => {
         showToast("请求失败");
