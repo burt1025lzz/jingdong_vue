@@ -1,7 +1,26 @@
 <template>
+  <div class="mask" v-if="showCart" />
   <div class="cart">
-    <div class="product">
-      <div class="product__header"></div>
+    <div class="product" v-if="showCart">
+      <div class="product__header">
+        <div
+          class="product__header__all"
+          @click="() => setCartItemsChecked(shopId)"
+        >
+          <span
+            class="product__header__icon iconfont"
+            :style="allChecked ? { color: '#0091FF' } : { color: '#909399' }"
+            >&#xe652;</span
+          >
+          全选
+        </div>
+        <div
+          class="product__header__clear"
+          @click="() => cleanCartProducts(shopId)"
+        >
+          清空购物车
+        </div>
+      </div>
       <template v-for="item in productsList" :key="item._id">
         <div class="product__item" v-if="item.count > 0">
           <div
@@ -50,7 +69,7 @@
       </template>
     </div>
     <div class="check">
-      <div class="check__icon">
+      <div class="check__icon" @click="handleCartShowChange">
         <img
           src="http://www.dell-lee.com/imgs/vue3/basket.png"
           class="check__icon__img"
@@ -69,7 +88,7 @@
 <script>
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useCommonCartEffect } from "@/views/Shop/common/cartEffect";
 
 // 获取购物车信息逻辑
@@ -104,6 +123,18 @@ const useCartEffect = () => {
     return count.toFixed(2);
   });
 
+  const allChecked = computed(() => {
+    const productList = cartList[shopId];
+    let result = true;
+    if (productList) {
+      for (let i in productList) {
+        const product = productList[i];
+        if (product.count > 0 && !product.check) result = false;
+      }
+    }
+    return result;
+  });
+
   const productsList = computed(() => {
     return cartList[shopId] || [];
   });
@@ -112,13 +143,24 @@ const useCartEffect = () => {
     store.commit("changeCartItemChecked", { shopId, productId });
   };
 
+  const cleanCartProducts = shopId => {
+    store.commit("cleanCartProducts", { shopId });
+  };
+
+  const setCartItemsChecked = shopId => {
+    store.commit("setCartItemsChecked", { shopId });
+  };
+
   return {
     total,
     price,
     productsList,
+    allChecked,
     shopId,
     changeCartItemInfo,
-    changeCartItemChecked
+    changeCartItemChecked,
+    cleanCartProducts,
+    setCartItemsChecked
   };
 };
 
@@ -129,17 +171,30 @@ export default {
       total,
       price,
       productsList,
+      allChecked,
       shopId,
       changeCartItemInfo,
-      changeCartItemChecked
+      changeCartItemChecked,
+      cleanCartProducts,
+      setCartItemsChecked
     } = useCartEffect();
+    const showCart = ref(false);
+    const handleCartShowChange = () => {
+      showCart.value = !showCart.value;
+    };
+
     return {
       total,
       price,
       productsList,
+      allChecked,
       shopId,
+      showCart,
       changeCartItemInfo,
-      changeCartItemChecked
+      changeCartItemChecked,
+      cleanCartProducts,
+      setCartItemsChecked,
+      handleCartShowChange
     };
   }
 };
@@ -148,17 +203,47 @@ export default {
 <style lang="sass" scoped>
 @import "~@/style/viriables"
 @import "~@/style/mixins"
+.mask
+  position: fixed
+  left: 0
+  right: 0
+  bottom: 0
+  top: 0
+  background: rgba(0, 0, 0, .5)
+  z-index: 1
 
 .cart
   position: absolute
   left: 0
   right: 0
   bottom: 0
+  z-index: 2
+  background: $bgColor
 
   .product
     overflow-y: scroll
     flex: 1
     background-color: $bgColor
+
+    &__header
+      display: flex
+      line-height: .52rem
+      font-size: .14rem
+      color: $content-fontColor
+      border-bottom: .01rem solid $content-bgColor
+
+      &__all
+        width: .64rem
+        margin-left: .18rem
+
+      &__icon
+        line-height: .52rem
+        font-size: .2rem
+
+      &__clear
+        flex: 1
+        text-align: right
+        margin-right: .16rem
 
     &__item
       position: relative
