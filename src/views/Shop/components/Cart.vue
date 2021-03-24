@@ -101,7 +101,7 @@ const useCartEffect = () => {
   const cartList = store.state.cartList;
 
   const total = computed(() => {
-    const productList = cartList[shopId];
+    const productList = cartList[shopId]?.productList;
     let count = 0;
     if (productList) {
       for (let i in productList) {
@@ -113,7 +113,7 @@ const useCartEffect = () => {
   });
 
   const price = computed(() => {
-    const productList = cartList[shopId];
+    const productList = cartList[shopId]?.productList;
     let count = 0;
     if (productList) {
       for (let i in productList) {
@@ -125,7 +125,7 @@ const useCartEffect = () => {
   });
 
   const allChecked = computed(() => {
-    const productList = cartList[shopId];
+    const productList = cartList[shopId]?.productList;
     let result = true;
     if (productList) {
       for (let i in productList) {
@@ -137,7 +137,7 @@ const useCartEffect = () => {
   });
 
   const productsList = computed(() => {
-    return cartList[shopId] || [];
+    return cartList[shopId]?.productList || [];
   });
 
   const changeCartItemChecked = (shopId, productId) => {

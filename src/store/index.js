@@ -6,16 +6,20 @@ export default createStore({
       /*
       // 第一层级是商铺ID
       shopId: {
-        // 第二层级是商品ID
-        productId: {
-          // 第二层内容是商品内容及购买数量
-          _id: 1,
-          name: "番茄 250g / 份",
-          imgUrl: "http://www.dell-lee.com/imgs/vue3/tomato.png",
-          sales: 10,
-          price: 33.6,
-          oldPrice: 39.6,
-          count: 2
+        // 第二层级是商品详情
+        shopName: "",
+        productList: {
+          // 第三层级是商品ID
+          productId: {
+            // 第三层内容是商品内容及购买数量
+            _id: 0,
+            name: "",
+            imgUrl: "",
+            sales: 0,
+            price: 0,
+            oldPrice: 0,
+            count: 0
+          }
         }
       }
       */
@@ -24,8 +28,11 @@ export default createStore({
   mutations: {
     changeCartItemInfo(state, payload) {
       const { shopId, productId, productInfo, number } = payload;
-      let shopInfo = state.cartList[shopId] || {};
-      let product = shopInfo[productId];
+      let shopInfo = state.cartList[shopId] || {
+        shopName: "",
+        productList: {}
+      };
+      let product = shopInfo.productList[productId];
       if (!product) {
         productInfo.count = 0;
         product = productInfo;
@@ -33,21 +40,30 @@ export default createStore({
       product.count += number;
       number > 0 && (product.check = true);
       product.count < 0 && (product.count = 0);
-      shopInfo[productId] = product;
+      shopInfo.productList[productId] = product;
+      state.cartList[shopId] = shopInfo;
+    },
+    changeShopName(state, payload) {
+      const { shopId, shopName } = payload;
+      const shopInfo = state.cartList[shopId] || {
+        shopName: "",
+        productList: {}
+      };
+      shopInfo.shopName = shopName;
       state.cartList[shopId] = shopInfo;
     },
     changeCartItemChecked(state, payload) {
       const { shopId, productId } = payload;
-      const product = state.cartList[shopId][productId];
+      const product = state.cartList[shopId].productList[productId];
       product.check = !product.check;
     },
     cleanCartProducts(state, payload) {
       const { shopId } = payload;
-      state.cartList[shopId] = {};
+      state.cartList[shopId].productList = {};
     },
     setCartItemsChecked(state, payload) {
       const { shopId } = payload;
-      const products = state.cartList[shopId];
+      const products = state.cartList[shopId].productList;
       if (products) {
         for (let i in products) {
           const product = products[i];

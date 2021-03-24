@@ -11,7 +11,7 @@
     </div>
     <ShopInfo v-show="item.imgUrl" :item="item" :hide-border="false" />
   </div>
-  <ShopContent />
+  <ShopContent :shopName="item.name" />
   <Cart />
 </template>
 
