@@ -38,7 +38,7 @@
             "
             >-</span
           >
-          {{ cartList?.[shopId]?.productList?.[item._id]?.count || 0 }}
+          {{ getProductCartCount(shopId, item._id) }}
           <span
             class="product__number__plus"
             @click="
@@ -92,24 +92,34 @@ const useCurrentListEffect = (currentTab, shopId) => {
   return { list };
 };
 
+const useCartEffect = () => {
+  const store = useStore();
+  const { cartList, changeCartItemInfo } = useCommonCartEffect();
+  const changeShopName = (shopId, shopName) => {
+    store.commit("changeShopName", { shopId, shopName });
+  };
+
+  const changeCartItem = (shopId, productId, item, number, shopName) => {
+    changeCartItemInfo(shopId, productId, item, number);
+    changeShopName(shopId, shopName);
+  };
+
+  const getProductCartCount = (shopId, productId) => {
+    return cartList?.[shopId]?.productList?.[productId]?.count || 0;
+  };
+
+  return { cartList, changeCartItem, getProductCartCount };
+};
+
 export default {
   name: "ShopContent",
   props: ["shopName"],
   setup() {
     const route = useRoute();
-    const store = useStore();
     const shopId = route.params.id;
     const { currentTab, handleTabClick } = useTabEffect();
     const { list } = useCurrentListEffect(currentTab, shopId);
-    const { cartList, changeCartItemInfo } = useCommonCartEffect();
-    const changeShopName = (shopId, shopName) => {
-      store.commit("changeShopName", { shopId, shopName });
-    };
-
-    const changeCartItem = (shopId, productId, item, number, shopName) => {
-      changeCartItemInfo(shopId, productId, item, number);
-      changeShopName(shopId, shopName);
-    };
+    const { cartList, changeCartItem, getProductCartCount } = useCartEffect();
 
     return {
       list,
@@ -118,7 +128,8 @@ export default {
       shopId,
       cartList,
       handleTabClick,
-      changeCartItem
+      changeCartItem,
+      getProductCartCount
     };
   }
 };
