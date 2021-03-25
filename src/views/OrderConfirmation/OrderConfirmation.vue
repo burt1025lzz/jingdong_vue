@@ -17,17 +17,50 @@
         <div class="top__receiver__icon iconfont">&#xe625;</div>
       </div>
     </div>
+    <div class="products">
+      <div class="products__title">{{ shopName }}</div>
+      <div class="products__item" v-for="item in productsList" :key="item._id">
+        <img
+          :src="item.imgUrl"
+          alt="product__item__img"
+          class="products__item__img"
+        />
+        <div class="products__item__detail">
+          <h4 class="products__item__title">{{ item.name }}</h4>
+          <p class="products__item__price">
+            <span>
+              <span class="products__item__yen">&yen;</span>
+              {{ item.price }} x {{ item.count }}
+            </span>
+            <span class="products__item__total">
+              <span class="products__item__yen">&yen; </span>
+              {{ item.price * item.count }}
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import { useCommonCartEffect } from "@/common/cartEffect";
+import { useRoute } from "vue-router";
+
 export default {
-  name: "OrderConfirmation"
+  name: "OrderConfirmation",
+  setup() {
+    const route = useRoute();
+    const shopId = route.params.id;
+    const { shopName, productsList } = useCommonCartEffect(shopId);
+    return { shopName, productsList };
+  }
 };
 </script>
 
 <style lang="sass" scoped>
 @import "~@/style/viriables"
+@import "~@/style/mixins"
 .wrapper
   position: absolute
   left: 0
@@ -85,6 +118,7 @@ export default {
           line-height: .18rem
           font-size: .12rem
           color: $medium-fontColor
+
       &__icon
         position: absolute
         right: .16rem
@@ -92,4 +126,48 @@ export default {
         color: $medium-fontColor
         font-size: .16rem
         transform: rotate(180deg)
+
+  .products
+    margin: .16rem .18rem .55rem .18rem
+    background: $bgColor
+
+    &__title
+      padding: .16rem .16rem 0 .16rem
+      font-size: .16rem
+      color: $content-fontColor
+
+    &__item
+      position: relative
+      display: flex
+      padding: .16rem
+
+      &__img
+        width: .46rem
+        height: .46rem
+        margin-right: .16rem
+
+      &__detail
+        flex: 1
+
+      &__title
+        line-height: .2rem
+        font-size: .14rem
+        color: $content-fontColor
+        margin: 0
+        @include ellipsis
+
+      &__price
+        display: flex
+        line-height: .2rem
+        font-size: .14rem
+        color: $highlight-fontColor
+        margin: .06rem 0 0 0
+
+      &__total
+        flex: 1
+        text-align: right
+        color: #000
+
+      &__yen
+        font-size: .12rem
 </style>
