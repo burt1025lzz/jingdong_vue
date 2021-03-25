@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="mask"
-    v-if="showCart && calculations.total"
-    @click="handleCartShowChange"
-  />
+  <div class="mask" v-if="showCart && calculations.total" @click="mark" />
   <div class="cart">
     <div class="product" v-if="showCart && calculations.total">
       <div class="product__header">
@@ -93,6 +89,7 @@
       </div>
     </div>
   </div>
+  <Toast v-if="show" :message="toastMessage" />
 </template>
 
 <script>
@@ -100,6 +97,7 @@ import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { computed, ref } from "vue";
 import { useCommonCartEffect } from "@/common/cartEffect";
+import Toast, { useToastEffect } from "@/components/Toast/Toast";
 
 // 获取购物车信息逻辑
 const useCartEffect = showCart => {
@@ -123,6 +121,10 @@ const useCartEffect = showCart => {
       }
     }
     result.price = result.price.toFixed(2);
+
+    localStorage.cartTotal = result.total;
+    result.total === 0 && (showCart.value = false);
+
     return result;
   });
 
@@ -150,18 +152,30 @@ const useCartEffect = showCart => {
   };
 };
 
-const toggleCartEffect = () => {
+const toggleCartEffect = showToast => {
   const showCart = ref(false);
   const handleCartShowChange = () => {
+    if (localStorage.cartTotal <= 0) {
+      showToast("请先添加商品!");
+      return false;
+    }
     showCart.value = !showCart.value;
   };
-  return { showCart, handleCartShowChange };
+  const mark = () => {
+    showCart.value = false;
+  };
+  return { showCart, mark, handleCartShowChange };
 };
 
 export default {
   name: "Cart",
+  components: { Toast },
   setup() {
-    const { showCart, handleCartShowChange } = toggleCartEffect();
+    const { show, toastMessage, showToast } = useToastEffect();
+
+    const { showCart, mark, handleCartShowChange } = toggleCartEffect(
+      showToast
+    );
 
     const {
       calculations,
@@ -178,10 +192,14 @@ export default {
       productsList,
       shopId,
       showCart,
+      show,
+      toastMessage,
+      showToast,
       changeCartItemInfo,
       changeCartItemChecked,
       cleanCartProducts,
       setCartItemsChecked,
+      mark,
       handleCartShowChange
     };
   }
@@ -355,6 +373,7 @@ export default {
       background-color: #4FB0F9
       font-size: .14rem
       text-align: center
+
       a
         color: $bgColor
 </style>
