@@ -95,7 +95,7 @@
 <script>
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import { useCommonCartEffect } from "@/common/cartEffect";
 import Toast, { useToastEffect } from "@/components/Toast/Toast";
 
@@ -104,29 +104,11 @@ const useCartEffect = showCart => {
   const store = useStore();
   const route = useRoute();
   const shopId = route.params.id;
-  const { cartList, productsList, changeCartItemInfo } = useCommonCartEffect(
-    shopId
-  );
-
-  const calculations = computed(() => {
-    const productList = cartList[shopId]?.productList;
-    const result = { total: 0, price: 0, allChecked: true };
-
-    if (productList) {
-      for (let i in productList) {
-        const product = productList[i];
-        result.total += product.count;
-        product.check && (result.price += product.count * product.price);
-        product.count > 0 && !product.check && (result.allChecked = false);
-      }
-    }
-    result.price = result.price.toFixed(2);
-
-    localStorage.cartTotal = result.total;
-    result.total === 0 && (showCart.value = false);
-
-    return result;
-  });
+  const {
+    calculations,
+    productsList,
+    changeCartItemInfo
+  } = useCommonCartEffect(shopId, showCart);
 
   const changeCartItemChecked = (shopId, productId) => {
     store.commit("changeCartItemChecked", { shopId, productId });
@@ -370,7 +352,7 @@ export default {
     &__btn
       width: .98rem
       color: $bgColor
-      background-color: #4FB0F9
+      background-color: $submit-bgColor
       font-size: .14rem
       text-align: center
 

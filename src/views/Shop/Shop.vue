@@ -17,8 +17,9 @@
 
 <script>
 import { reactive, toRefs } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRoute } from "vue-router";
 import { getShop } from "@/api/summary";
+import { useBackRouterEffect } from "@/common/routeBackEffect";
 import ShopInfo from "@/components/ShopInfo/ShopInfo";
 import ShopContent from "@/views/Shop/components/ShopContent";
 import Cart from "@/views/Shop/components/Cart";
@@ -36,14 +37,6 @@ const useShopInfoEffect = () => {
   };
   const { item } = toRefs(data);
   return { item, getItemData };
-};
-
-const useBackRouterEffect = () => {
-  const router = useRouter();
-  const handleBackClick = () => {
-    router.back();
-  };
-  return { handleBackClick };
 };
 
 export default {
