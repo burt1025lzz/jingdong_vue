@@ -6,7 +6,12 @@ const setLocalCartList = state => {
 };
 
 const getLocalCartList = () => {
-  return (localStorage.cartList && JSON.parse(localStorage.cartList)) || {};
+  // return (localStorage.cartList && JSON.parse(localStorage.cartList)) || {};
+  try {
+    return JSON.parse(localStorage.cartList);
+  } catch (e) {
+    return {};
+  }
   /*
      // 第一层级是商铺ID
      shopId: {
@@ -83,6 +88,9 @@ export default createStore({
         }
       }
       setLocalCartList(state);
+    },
+    clearCartData(state, shopId) {
+      state.cartList[shopId].productList = {};
     }
   },
   actions: {},

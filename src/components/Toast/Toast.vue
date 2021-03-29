@@ -39,4 +39,5 @@ export const useToastEffect = () => {
   border-radius: .05rem
   color: $bgColor
   background: rgba(0, 0, 0, .35)
+  z-index: 999
 </style>

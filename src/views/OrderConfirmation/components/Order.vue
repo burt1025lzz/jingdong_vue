@@ -4,41 +4,89 @@
       实付金额
       <span>&yen;{{ calculations.price }}</span>
     </div>
-    <div class="order__btn">提交订单</div>
+    <div class="order__btn" @click="() => handleSubmitOrder(true)">
+      提交订单
+    </div>
   </div>
-  <div class="mask">
-    <div class="mask__content">
+  <div class="mask" @click="() => handleSubmitOrder(false)" v-show="showConfirm">
+    <div class="mask__content" @click.stop>
       <h3 class="mask__content__title">确认要离开收银台？</h3>
       <p class="mask__content__desc">请尽快完成支付，否则将被取消</p>
       <div class="mask__content__btnContainer">
-        <div class="mask__content__btn" @click="handleCancelOrder">
+        <div class="mask__content__btn" @click="() => handleConfirmOrder(true)">
           取消订单
         </div>
-        <div class="mask__content__btn" @click="handleConfirmOrder">
+        <div
+          class="mask__content__btn"
+          @click="() => handleConfirmOrder(false)"
+        >
           确认支付
         </div>
       </div>
     </div>
   </div>
+  <Toast v-if="show" :message="toastMessage" />
 </template>
 
 <script>
-import { useRoute } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
+import { useStore } from "vuex";
+import { ref } from "vue";
 import { useCommonCartEffect } from "@/common/cartEffect";
+import Toast, { useToastEffect } from "@/components/Toast/Toast";
+import { getOrder } from "@/api/summary";
 
 export default {
   name: "Order",
+  components: { Toast },
   setup() {
+    const router = useRouter();
     const route = useRoute();
+    const store = useStore();
     const shopId = route.params.id;
-    const { calculations } = useCommonCartEffect(shopId);
-    const handleCancelOrder = () => {
-      alert("Cancel");
+    const { shopName, productsList, calculations } = useCommonCartEffect(
+      shopId
+    );
+    const { show, toastMessage, showToast } = useToastEffect();
+    const showConfirm = ref(false);
+    const handleSubmitOrder = status => {
+      showConfirm.value = status;
     };
-    const handleConfirmOrder = () => {
-      alert("Confirm");
+    const handleConfirmOrder = isCancel => {
+      const products = [];
+      for (let i in productsList.value) {
+        const product = productsList.value[i];
+        products.push({
+          id: parseInt(product._id, 10),
+          num: product.count
+        });
+      }
+      getOrder({
+        addressId: 1,
+        shopId,
+        shopName: shopName.value,
+        isCancel,
+        products
+      })
+        .then(resp => {
+          if (resp?.errno === 0) {
+            router.push({ name: "Home" });
+            store.commit("clearCartData", shopId);
+          }
+        })
+        .catch(() => {
+          showToast("请求失败");
+        });
     };
-    return { calculations, handleCancelOrder, handleConfirmOrder };
+    return {
+      calculations,
+      show,
+      toastMessage,
+      showToast,
+      showConfirm,
+      handleSubmitOrder,
+      handleConfirmOrder
+    };
   }
 };
 </script>
