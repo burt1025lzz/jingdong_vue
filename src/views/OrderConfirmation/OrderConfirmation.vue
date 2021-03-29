@@ -21,25 +21,29 @@
     </div>
     <div class="products">
       <div class="products__title">{{ shopName }}</div>
-      <div class="products__item" v-for="item in productsList" :key="item._id">
-        <img
-          :src="item.imgUrl"
-          alt="product__item__img"
-          class="products__item__img"
-        />
-        <div class="products__item__detail">
-          <h4 class="products__item__title">{{ item.name }}</h4>
-          <p class="products__item__price">
-            <span>
-              <span class="products__item__yen">&yen;</span>
-              {{ item.price }} x {{ item.count }}
-            </span>
-            <span class="products__item__total">
-              <span class="products__item__yen">&yen;</span>
-              {{ item.price * item.count }}
-            </span>
-          </p>
-        </div>
+      <div class="products__list">
+        <template v-for="item in productsList" :key="item._id">
+          <div class="products__item" v-if="item.count">
+            <img
+              :src="item.imgUrl"
+              alt="product__item__img"
+              class="products__item__img"
+            />
+            <div class="products__item__detail">
+              <h4 class="products__item__title">{{ item.name }}</h4>
+              <p class="products__item__price">
+                <span>
+                  <span class="products__item__yen">&yen;</span>
+                  {{ item.price }} x {{ item.count }}
+                </span>
+                <span class="products__item__total">
+                  <span class="products__item__yen">&yen;</span>
+                  {{ (item.price * item.count).toFixed(2) }}
+                </span>
+              </p>
+            </div>
+          </div>
+        </template>
       </div>
     </div>
     <div class="order">
@@ -81,6 +85,7 @@ export default {
   top: 0
   bottom: 0
   background: rgb(248, 248, 248)
+  overflow-y: scroll
 
   .top
     position: relative
@@ -141,13 +146,16 @@ export default {
         transform: rotate(180deg)
 
   .products
-    margin: .16rem .18rem .55rem .18rem
+    margin: .16rem .18rem .2rem .18rem
     background: $bgColor
 
     &__title
       padding: .16rem .16rem 0 .16rem
       font-size: .16rem
       color: $content-fontColor
+
+    &__list
+      margin-bottom: .65rem
 
     &__item
       position: relative
@@ -199,6 +207,7 @@ export default {
       text-indent: .24rem
       font-size: .14rem
       color: $content-fontColor
+
       span
         font-size: .16rem
         font-weight: bolder
