@@ -2,37 +2,30 @@
   <div className="wrapper">
     <div class="title">我的订单</div>
     <div class="orderContainer">
-      <div class="order">
+      <div class="order" v-for="(item, index) in list" :key="index">
         <div class="order__title">
-          沃尔玛
-          <span class="order__title__status">已取消</span>
+          {{ item.shopName }}
+          <span class="order__title__status">
+            {{ item.isCanceled ? "已取消" : "已下单" }}
+          </span>
         </div>
         <div class="order__content">
           <div class="order__content__imgContainer">
-            <img
-              src="http://www.dell-lee.com/imgs/vue3/tomato.png"
-              alt="order__content__img"
-              class="order__content__img"
-            />
-            <img
-              src="http://www.dell-lee.com/imgs/vue3/tomato.png"
-              alt="order__content__img"
-              class="order__content__img"
-            />
-            <img
-              src="http://www.dell-lee.com/imgs/vue3/tomato.png"
-              alt="order__content__img"
-              class="order__content__img"
-            />
-            <img
-              src="http://www.dell-lee.com/imgs/vue3/tomato.png"
-              alt="order__content__img"
-              class="order__content__img"
-            />
+            <template
+              v-for="(innerItem, innerIndex) in item.products"
+              :key="innerIndex"
+            >
+              <img
+                v-if="innerIndex <= 3"
+                :src="innerItem.product.img"
+                alt="order__content__img"
+                class="order__content__img"
+              />
+            </template>
           </div>
           <div class="order__content__info">
-            <div class="order__content__price">&yen;66.69</div>
-            <div class="order__content__count">共2件</div>
+            <div class="order__content__price">&yen;{{ item.totalPrice }}</div>
+            <div class="order__content__count">共{{ item.totalNum }}件</div>
           </div>
         </div>
       </div>
@@ -42,11 +35,44 @@
 </template>
 
 <script>
+import { reactive, toRefs } from "vue";
 import Docker from "@/components/Docker/Docker";
+import { getOrderList } from "@/api/summary";
+
+// 处理订单列表逻辑
+const useOrderListEffect = () => {
+  const data = reactive({
+    list: []
+  });
+  getOrderList().then(resp => {
+    if (resp?.errno === 0 && resp?.data?.length) {
+      const orderList = resp.data;
+      orderList.forEach(order => {
+        const products = order.products || [];
+        let totalPrice = 0;
+        let totalNum = 0;
+        products.forEach(productItem => {
+          totalNum += productItem.orderSales || 0;
+          totalPrice +=
+            productItem?.product?.price * productItem?.orderSales || 0;
+        });
+        order.totalNum = totalNum;
+        order.totalPrice = totalPrice;
+      });
+      data.list = resp.data;
+    }
+  });
+  const { list } = toRefs(data);
+  return { list };
+};
 
 export default {
   name: "orderList",
-  components: { Docker }
+  components: { Docker },
+  setup() {
+    const { list } = useOrderListEffect();
+    return { list };
+  }
 };
 </script>
 

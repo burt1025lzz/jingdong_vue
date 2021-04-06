@@ -51,3 +51,11 @@ export function getOrder(data) {
     data
   });
 }
+
+// 获取订单列表
+export function getOrderList() {
+  return request({
+    url: "order",
+    method: "get"
+  });
+}
