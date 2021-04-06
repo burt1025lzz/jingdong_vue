@@ -4,11 +4,15 @@
       实付金额
       <span>&yen;{{ calculations.price }}</span>
     </div>
-    <div class="order__btn" @click="() => handleSubmitOrder(true)">
+    <div class="order__btn" @click="() => handleShowConfirmChange(true)">
       提交订单
     </div>
   </div>
-  <div class="mask" @click="() => handleSubmitOrder(false)" v-show="showConfirm">
+  <div
+    class="mask"
+    @click="() => handleShowConfirmChange(false)"
+    v-show="showConfirm"
+  >
     <div class="mask__content" @click.stop>
       <h3 class="mask__content__title">确认要离开收银台？</h3>
       <p class="mask__content__desc">请尽快完成支付，否则将被取消</p>
@@ -36,55 +40,72 @@ import { useCommonCartEffect } from "@/common/cartEffect";
 import Toast, { useToastEffect } from "@/components/Toast/Toast";
 import { getOrder } from "@/api/summary";
 
+// 下单相关逻辑
+const useMakeOrderEffect = (productsList, shopId, shopName, showToast) => {
+  const router = useRouter();
+  const store = useStore();
+  const handleConfirmOrder = isCancel => {
+    const products = [];
+    for (let i in productsList.value) {
+      const product = productsList.value[i];
+      products.push({
+        id: parseInt(product._id, 10),
+        num: product.count
+      });
+    }
+    getOrder({
+      addressId: 1,
+      shopId,
+      shopName: shopName.value,
+      isCancel,
+      products
+    })
+      .then(resp => {
+        if (resp?.errno === 0) {
+          router.push({ name: "OrderList" });
+          store.commit("clearCartData", shopId);
+        }
+      })
+      .catch(() => {
+        showToast("请求失败");
+      });
+  };
+  return { handleConfirmOrder };
+};
+
+// 蒙层显示与否
+const useShowMaskEffect = () => {
+  const showConfirm = ref(false);
+  const handleShowConfirmChange = status => {
+    showConfirm.value = status;
+  };
+  return { showConfirm, handleShowConfirmChange };
+};
+
 export default {
   name: "Order",
   components: { Toast },
   setup() {
-    const router = useRouter();
     const route = useRoute();
-    const store = useStore();
     const shopId = route.params.id;
     const { shopName, productsList, calculations } = useCommonCartEffect(
       shopId
     );
+    const { handleConfirmOrder } = useMakeOrderEffect(
+      productsList,
+      shopId,
+      shopName,
+      showToast
+    );
     const { show, toastMessage, showToast } = useToastEffect();
-    const showConfirm = ref(false);
-    const handleSubmitOrder = status => {
-      showConfirm.value = status;
-    };
-    const handleConfirmOrder = isCancel => {
-      const products = [];
-      for (let i in productsList.value) {
-        const product = productsList.value[i];
-        products.push({
-          id: parseInt(product._id, 10),
-          num: product.count
-        });
-      }
-      getOrder({
-        addressId: 1,
-        shopId,
-        shopName: shopName.value,
-        isCancel,
-        products
-      })
-        .then(resp => {
-          if (resp?.errno === 0) {
-            router.push({ name: "Home" });
-            store.commit("clearCartData", shopId);
-          }
-        })
-        .catch(() => {
-          showToast("请求失败");
-        });
-    };
+    const { showConfirm, handleShowConfirmChange } = useShowMaskEffect();
     return {
       calculations,
       show,
       toastMessage,
       showToast,
       showConfirm,
-      handleSubmitOrder,
+      handleShowConfirmChange,
       handleConfirmOrder
     };
   }
