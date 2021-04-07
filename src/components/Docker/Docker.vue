@@ -3,7 +3,10 @@
     <div
       v-for="(item, index) in dockerList"
       :key="item.icon"
-      :class="{ docker__item: true, 'docker__item--active': index === currentIndex }"
+      :class="{
+        docker__item: true,
+        'docker__item--active': index === currentIndex
+      }"
     >
       <router-link :to="item.to">
         <div className="iconfont" v-html="item.icon" />
